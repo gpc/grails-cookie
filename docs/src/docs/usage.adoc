@@ -1,0 +1,82 @@
+== Usage
+
+Two equivalent APIs are available everywhere in a Grails application: extension methods on `request` and `response` objects, and an injectable `CookieService`.
+
+=== Extension methods on `request` / `response`
+
+The plugin adds several convenient methods to `HttpServletRequest` and `HttpServletResponse`.
+
+==== Setting Cookies
+
+[source,groovy]
+----
+// Set a cookie with default settings
+// (default age = 30 days, HttpOnly = true, path = context path)
+response.setCookie('username', 'cookieUser123')
+
+// Set with explicit age (seconds), path, domain, secure, and httpOnly
+response.setCookie('username', 'cookieUser123', 604800, '/', null, false, true)
+
+// Set via named parameters
+response.setCookie([
+    name: 'username',
+    value: 'cookieUser123',
+    maxAge: 604800,
+    secure: true,
+    httpOnly: true
+])
+----
+
+==== Getting Cookies
+
+[source,groovy]
+----
+// Get the value of a cookie
+String value = request.getCookie('username') // returns 'cookieUser123' or null
+
+// Find the full Cookie object
+Cookie cookie = request.findCookie('username')
+----
+
+==== Deleting Cookies
+
+[source,groovy]
+----
+// Delete a cookie by name
+response.deleteCookie('username')
+
+// Delete with specific path and domain
+response.deleteCookie('username', '/path', '.example.com')
+
+// Delete an existing Cookie object
+response.deleteCookie(existingCookieObject)
+----
+
+=== Injectable `CookieService`
+
+The `CookieService` provides the same functionality as the extension methods and can be injected into your services, controllers, or other Spring beans.
+
+[source,groovy]
+----
+class MyService {
+    CookieService cookieService
+
+    void doSomething() {
+        // Set a cookie
+        cookieService.setCookie('username', 'cookieUser123', 604800)
+
+        // Get a cookie value
+        String value = cookieService.getCookie('username')
+
+        // Delete a cookie
+        cookieService.deleteCookie('username')
+    }
+}
+----
+
+The `CookieService` has the same method signatures as the response/request extension methods.
+
+
+
+
+

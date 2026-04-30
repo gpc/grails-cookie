@@ -1,202 +1,182 @@
 # Grails Cookie Plugin
 
-[![Build Status](https://api.travis-ci.org/Grails-Plugin-Consortium/grails-cookie.svg?branch=master)](https://api.travis-ci.org/Grails-Plugin-Consortium/grails-cookie)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.gpc/grails-cookie.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.gpc/grails-cookie)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![CI](https://github.com/gpc/grails-cookie/actions/workflows/ci.yml/badge.svg)](https://github.com/gpc/grails-cookie/actions/workflows/ci.yml)
 
-This plugin makes dealing with cookies easy. Provides an injectable service and tag to easily get, set, and delete cookies with one line.
+This plugin makes dealing with cookies easy. It provides an injectable `CookieService` and Groovy extension methods on
+`HttpServletRequest` / `HttpServletResponse` to get, set, and delete cookies with one line.
 
-It's [RFC 6265](http://tools.ietf.org/html/rfc6265) compliant.
+It is [RFC 6265](https://tools.ietf.org/html/rfc6265) compliant.
 
-## Installation
+## Quick Start
 
-To install the cookie plug-in just add to `build.gradle`:
+Add to `build.gradle`:
+
 ```groovy
-    
-    implementation 'org.grails.plugins:cookie:2.0.5'
-    
+implementation 'io.github.gpc:grails-cookie:3.0.0'
 ```
 
-## Configuration
+### Snapshot builds
 
-You can configure in `Config.groovy` or `application.yml` how long the default cookie age will be (in seconds) when not explicitly supplied while setting a cookie.
+Snapshot versions are published to Maven Central Snapshots. To use a snapshot, add the repository:
+
 ```groovy
-grails.plugins.cookie.cookieage.default = 86400 // if not specified default in code is 30 days
+// settings.gradle
+dependencyResolutionManagement {
+    repositories {
+        maven { url = 'https://central.sonatype.com/repository/maven-snapshots/' }
+        mavenCentral()
+    }
+}
+```
+
+Then add the dependency:
+
+```groovy
+implementation 'io.github.gpc:grails-cookie:3.0.0-SNAPSHOT'
 ```
 
 ## Usage
 
-You have two ways to work with cookies:
-* The cookie plug-in extends the `request` and `response` objects found in controllers, filters, etc to allow the following.
-* The cookie plug-in provides a [CookieService](./grails-app/services/grails/plugin/cookie/CookieService.groovy) that can be used anywhere in your Grails application.
+Two equivalent APIs are available everywhere in a Grails application:
 
-Example of setting a new cookie:
+### Extension methods on `request` / `response`
+
 ```groovy
-// This sets a cookie with the name `username` to the value `cookieUser123` with a expiration set to a week, defined in seconds
-response.setCookie('username', 'cookieUser123', 604800)
-// will use default age from Config (or 30 days if not defined)
+// Set a cookie (default age = 30 days, HttpOnly = true, path = context path)
 response.setCookie('username', 'cookieUser123')
 
-// using service
-def cookieService // define field for DI
-...
-cookieService.setCookie('username', 'cookieUser123', 604800)
+// Set with explicit age (seconds), path, domain, secure, httpOnly
+response.setCookie('username', 'cookieUser123', 604800, '/', null, false, true)
+
+// Set via named params
+response.setCookie([name: 'username', value: 'cookieUser123', maxAge: 604800, secure: true])
+
+// Get the value
+String value = request.getCookie('username')          // returns 'cookieUser123' or null
+
+// Find the full Cookie object
+Cookie cookie = request.findCookie('username')
+
+// Delete (sets Max-Age=0 on a new cookie with the same name/path/domain)
+response.deleteCookie('username')
+response.deleteCookie('username', '/path', '.example.com')
+response.deleteCookie(existingCookieObject)
 ```
 
-To get the cookie value:
+### Injectable `CookieService`
+
 ```groovy
-request.getCookie('username') // returns 'cookieUser123'
+class MyService {
+    CookieService cookieService
 
-// using service
-def cookieService // define field for DI
-...
-cookieService.getCookie('username') // returns 'cookieUser123'
+    void doSomething() {
+        cookieService.setCookie('username', 'cookieUser123', 604800)
+        String value = cookieService.getCookie('username')
+        cookieService.deleteCookie('username')
+    }
+}
 ```
 
-To delete the cookie (actually it set new expired cookie with same name):
-```groovy
-response.deleteCookie('username') // deletes the 'username' cookie
-// using service
-def cookieService // define field for DI
-...
-cookieService.deleteCookie('username')
-```
-
-All this methods has other signatures and you can find all of them in [CookieService](./grails-app/services/grails/plugin/cookie/CookieService.groovy) JavaDoc's.
-
-You can check out [Demo project](https://github.com/stokito/grails-cookie-demo) and also you can find details of implementation in [CookieRequestSpec](./src/test/groovy/grails/plugin/cookie/CookieRequestSpec.groovy) and [CookieResponseSpec](./src/test/groovy/grails/plugin/cookie/CookieResponseSpec.groovy).
+`CookieService` has the same method signatures as the response/request extension methods.
 
 ## Configuration
 
-You can configure default values of attributes in `Config.groovy`.
+All config keys are optional. Defaults are intentionally safe for most applications.
 
-### Default Max Age
-Default expiration age for cookie in seconds. `Max-Age` attribute, integer.
+### `grails.plugins.cookie.cookieage.default`
 
-If it has value `-1` cookie will not stored and removed after browser close.
+Default `Max-Age` for cookies in seconds.
 
-If it has null value or unset, will be used 30 days, i.e. `2592000` seconds.
+- `null` or unset → **30 days** (2 592 000 s)
+- `-1` → session cookie (removed when browser closes)
+- `0` is reserved for deletion — do not use as a default
 
-Can't has value `0`, because it means that cookie should be removed.
-
-```groovy
-grails.plugins.cookie.cookieage.default = 360 * 24 * 60 * 60
+```yaml
+grails:
+    plugins:
+        cookie:
+            cookieage:
+                default: 86400   # 1 day
 ```
 
-### Default Path
-Default path for cookie selection strategy, string.
-* 'context' - web app context path, i.e. `grails.app.context` option in `Config.groovy`
-* 'root' - root of server, i.e. '/'
-* 'current' - current directory, i.e. controller name
+### `grails.plugins.cookie.path.defaultStrategy`
 
-If default path is null or unset, it will be used 'context' strategy
+How the cookie `Path` attribute is determined when none is supplied explicitly.
 
-```groovy
-grails.plugins.cookie.path.defaultStrategy = 'context'
+| Value     | Behaviour                         |
+|-----------|-----------------------------------|
+| `context` | Web app context path (default)    |
+| `root`    | `/`                               |
+| `current` | No path set (controller-relative) |
+
+```yaml
+grails:
+    plugins:
+        cookie:
+            path:
+                defaultStrategy: root
 ```
 
-### Default Secure
-Default secure cookie param. Secure cookie available only for HTTPS connections. `Secure` attribute, boolean.
-If default secure is null or unset, it will set all new cookies as secure if current connection is secure
-```groovy
-grails.plugins.cookie.secure.default = null
+### `grails.plugins.cookie.secure.default`
+
+Default `Secure` flag. If `null` or unset, mirrors `request.isSecure()` (i.e. cookies are secure when the connection is
+HTTPS).
+
+Boolean values and string equivalents (`"true"`, `"false"`, `"1"`, `"0"`, `"yes"`, `"no"`) are all accepted — this
+allows external `.properties` files to set the value as a string.
+
+```yaml
+grails:
+    plugins:
+        cookie:
+            secure:
+                default: true
 ```
 
-### Default HTTP Only
-Default HTTP Only param that denies accessing to JavaScript's `document.cookie`.
+### `grails.plugins.cookie.httpOnly.default`
 
-If null or unset will be `true`
+Default `HttpOnly` flag. Defaults to `true`. Accepts boolean and string boolean values.
 
-```groovy
-grails.plugins.cookie.httpOnly.default = true
+```yaml
+grails:
+    plugins:
+        cookie:
+            httpOnly:
+                default: false
 ```
 
-You can find details of implementation in [CookieServiceDefaultsSpec](./src/test/groovy/grails/plugin/cookie/CookieServiceDefaultsSpec.groovy).
+## Compatibility
 
-### External Config
-If you use property files to inject values to plugins at runtime.  This is now supported as of version 1.0.2.  This means that inside your external `foo.properties` file you can specify the following.
+| Plugin version | Grails version | Java | Groovy | Coordinate                             |
+|----------------|----------------|------|--------|----------------------------------------|
+| 3.x            | 7.0.x          | 17+  | 4.0.x  | org.grails.plugins:grails-cookie:3.0.0 |
+| 2.x            | 3.0.x          | 7+   | 2.x    | org.grails.plugins:cookie:2.0.5        |                     
+| 1.x            | 2.0.x          | 7+   | 2.x    | org.grails.plugins:cookie:1.4.0        |                     
 
-```groovy
-grails.plugins.cookie.httpOnly.default=true
+## Building from Source
+
+Requirements: Java 17, SDKMAN (recommended).
+
+```bash
+sdk env           # activates Java / Gradle / Groovy from .sdkmanrc
+./gradlew build   # compiles plugin, runs all unit + integration tests
 ```
 
-The string value will correctly be treated as a boolean.
+Run only plugin unit tests:
 
-## Changelog
+```bash
+./gradlew :grails-cookie:test
+```
 
-[All releases](https://github.com/grails-plugin-consortium/grails-cookie/releases)
+Run integration tests (boots example app):
 
-### v2.0.5 For Grails 3.0
-[Source](https://github.com/grails-plugin-consortium/grails-cookie/releases/tag/v2.0.5)
+```bash
+./gradlew :app1:integrationTest   # default-config scenarios
+./gradlew :app2:integrationTest   # config-override scenarios
+```
 
-- Bug fix for NPE on some find methods in groovy (Even though supposed to be null safe http://stackoverflow.com/questions/6866253/groovy-give-npe-on-list-find-call-but-only-after-a-period-of-time)
+## Contributing
 
-### v2.0.3 For Grails 3.0
-[Source](https://github.com/grails-plugin-consortium/grails-cookie/releases/tag/v2.0.3)
-
-- Missed exclude for test service
-
-### v2.0.2 For Grails 3.0
-[Source](https://github.com/grails-plugin-consortium/grails-cookie/releases/tag/v2.0.2)
-
-- Syncing extension and plugin versions
-
-
-### v2.0.1 For Grails 3.0
-[Source](https://github.com/grails-plugin-consortium/grails-cookie/releases/tag/v2.0.1)
-
-- Testing for mocking of service which was causing issues in grails 3.0.10
-
-### v2.0 For Grails 3.0
-[Source](https://github.com/grails-plugin-consortium/grails-cookie/releases/tag/v2.0)
-
-### v1.4 For Grails 2.4
-[Source](https://github.com/stokito/grails-cookie/releases/tag/v1.4)
-
-- Minimal Grails version 2.4
-
-### v1.2 Fixed bug with `path.defaultStrategy` option
-[Source](https://github.com/stokito/grails-cookie/releases/tag/v1.2)
-
-- [#35](https://github.com/stokito/grails-cookie/issues/35) option `grails.plugins.cookie.path.defaultStrategy` doesn't work.
-- Minimal Grails version 2.2.0. But tests of plugin itself will failed. To run them use command `./grailsw test-app` that uses wrapper with Grails 2.4
-- Minimal Java version is downgraded to 6
-
-### v1.1.0 Fixed bug with defaults not configured in Config
-[Source](https://github.com/stokito/grails-cookie/releases/tag/v1.1.0)
-
-- Minimal Grails version 2.4.0. Plugin probably should work with early versions of Grails but init tests require v2.4.0
-- [#32](https://github.com/stokito/grails-cookie/issues/32) Add ability to externalize configuration by changing check for boolean from `instanceof Boolean` to `toBoolean()` which will correctly address boolean `false` and string `"false"` properties
-
-### v1.0.1 Fixed bug with defaults not configured in Config
-[Source](https://github.com/stokito/grails-cookie/releases/tag/v1.0.1)
-
-- [#30](https://github.com/stokito/grails-cookie/issues/30) Default path strategy is 'context' and `grails.app.context` used null instead of actual context
-
-### v1.0 Production ready version
-[Source](https://github.com/stokito/grails-cookie/releases/tag/v1.0)
-
-- [#17](https://github.com/stokito/grails-cookie/issues/17) Since v0.1 all deprecated things was removed:
-       * Tag `<cookie:get/>`. Use standard `<g:cookie/>` tag instead.
-       * Methods `get()`, `set()`, `delete()` from `CookieService`. They are replaced with corresponding `getCookie()`,  `setCookie()`, `deleteCookie()`.
-- [#19](https://github.com/stokito/grails-cookie/issues/19) All cookies should be Version 1 (by RFC 2109) cookie specifications
-- [#22](https://github.com/stokito/grails-cookie/issues/22) Support of cookie attributes
-- [#10](https://github.com/stokito/grails-cookie/issues/10) Improved delete cookie method.  Method delete cookie now can takes a domain name
-- [#28](https://github.com/stokito/grails-cookie/issues/28) `setCookie()` and `deleteCookie()` should return added cookie
-- [#25](https://github.com/stokito/grails-cookie/issues/25) Make default `path`, `secure` and `httpOnly` configurable and more intelligent  enhancement
-
-
-### v0.60 Last release with deprecated taglib and methods in service
-[Source](https://github.com/stokito/grails-cookie/releases/tag/v0.6)
-
-- [#3](https://github.com/stokito/grails-cookie/issues/3) Fixed `deleteCookie` not works in `response`
-- [#16](https://github.com/stokito/grails-cookie/issues/16) added tests
-- [#17](https://github.com/stokito/grails-cookie/issues/17) Since v0.5 few things was deprecated and will be removed in version v1.0:
-       * Tag `<cookie:get/>`. Use standard `<g:cookie/>` tag instead.
-       * Methods `get()`, `set()`, `delete()` from `CookieService`. They are replaced with corresponding `getCookie()`,  `setCookie()`, `deleteCookie()`.
-
-### v0.3
-[Source](https://github.com/stokito/grails-cookie/releases/tag/v0.3)
-
-In the v0.3 release a big issue was fixed that now sets the cookie's path to the root `/` context.
-Otherwise it was setting the path to the same as the controller/service that triggered it.
-Most users I believe will want this behavior. If setting the path is desired, that can be accommodated.
-Please contact me or do a pull request if you'd like that.
+See [CONTRIBUTING.md](CONTRIBUTING.md).
