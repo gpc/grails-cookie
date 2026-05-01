@@ -124,8 +124,7 @@ grails:
 Default `Secure` flag. If `null` or unset, mirrors `request.isSecure()` (i.e. cookies are secure when the connection is
 HTTPS).
 
-Boolean values and string equivalents (`"true"`, `"false"`, `"1"`, `"0"`, `"yes"`, `"no"`) are all accepted — this
-allows external `.properties` files to set the value as a string.
+Boolean values 
 
 ```yaml
 grails:
