@@ -33,7 +33,7 @@ abstract class CookieResponseSpec extends Specification implements GrailsUnitTes
     @Unroll
     void "setCookie() with args as list"() {
         given:
-        def cookieThatWasSet = obj.setCookie(args)
+        obj.setCookie(args)
 
         expect:
         verifyAll(response.cookies[0]) {
@@ -57,7 +57,7 @@ abstract class CookieResponseSpec extends Specification implements GrailsUnitTes
     @Unroll
     void "setCookie()"() {
         given:
-        def cookieThatWasSet = obj.setCookie('cookie_name', 'cookie_val', aMaxAge, aPath, aDomain, isSecure, isHttpOnly)
+        obj.setCookie('cookie_name', 'cookie_val', aMaxAge, aPath, aDomain, isSecure, isHttpOnly)
 
         expect:
         verifyAll(response.cookies[0]) {
@@ -114,7 +114,7 @@ abstract class CookieResponseSpec extends Specification implements GrailsUnitTes
             secure = isSecure
             httpOnly = isHttpOnly
         }
-        def cookieThatWasSet = obj.setCookie(cookie)
+        obj.setCookie(cookie)
 
         expect:
         verifyAll(response.cookies[0]) {
