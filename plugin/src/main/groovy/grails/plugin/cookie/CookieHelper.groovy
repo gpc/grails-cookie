@@ -92,6 +92,6 @@ class CookieHelper implements ServletAttributes, WebAttributes {
 
     void writeCookieToResponse(HttpServletResponse response, Cookie cookie) {
         response.addCookie cookie
-        log.info "cookie set: ${cookie.name} = ${cookie.value}, Max-Age: ${cookie.maxAge}, Path: ${cookie.path}, Domain: ${cookie.domain}, HttpOnly: ${cookie.httpOnly}, Secure: ${cookie.secure}"
+        log.trace "cookie set: ${cookie.name}, Max-Age: ${cookie.maxAge}, Path: ${cookie.path}, Domain: ${cookie.domain}, HttpOnly: ${cookie.httpOnly}, Secure: ${cookie.secure}"
     }
 }
