@@ -1,13 +1,13 @@
 package app1
 
-import org.springframework.http.HttpStatusCode
+import spock.lang.Shared
+import spock.lang.Specification
 
-import grails.testing.mixin.integration.Integration
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
-import spock.lang.Shared
-import spock.lang.Specification
+
+import grails.testing.mixin.integration.Integration
 
 @Integration
 class CookieIntegrationSpec extends Specification {
