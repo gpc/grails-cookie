@@ -12,10 +12,7 @@ class CookieGrailsPlugin extends Plugin {
     def documentation = 'https://github.com/gpc/grails-cookie'
     def license = 'APACHE'
     def developers = [
-        [name: 'Christian Oestreich', email: 'acetrike@gmail.com'],
-        [name: 'Dale Wiggins', email: 'dale@dalew.com'],
-        [name: 'Sergey Ponomarev', email: 'stokito@gmail.com'],
-        [name: 'Søren Berg Glasius', email: 'soeren@glasius.dk'],
+        [name: 'Grails Plugin Collective', url: 'https://github.com/gpc/grails-cookie/graphs/contributors'],
     ]
     def issueManagement = [system: 'GITHUB', url: 'https://github.com/gpc/grails-cookie/issues']
     def scm = [url: 'https://github.com/gpc/grails-cookie']

@@ -36,9 +36,12 @@ extensions.configure(GrailsPublishExtension) {
         it.url = 'https://github.com/gpc'
     }
     it.developers = [
-        ctoestreich : 'Christian Oestreich',
-        stokito     : 'Sergey Ponomarev',
-        dalewiggins : 'Dale Wiggins',
-        sbglasius   : 'Søren Berg Glasius',
+            stokito       : 'Sergey Ponomarev',
+            ctoestreich   : 'Christian Oestreich',
+            donbeave      : 'Alexey Zhokhov',
+            jeffscottbrown: 'Jeff Scott Brown',
+            dalew75       : 'Dale Wiggins',
+            matrei        : 'Mattias Reichel',
+            sbglasius     : 'Søren Berg Glasius'
     ]
 }
