@@ -1,0 +1,9 @@
+= Grails Cookie User Guide
+:source-highlighter: coderay
+:numbered:
+
+include::introduction.adoc[]
+
+include::usage.adoc[]
+
+include::configuration.adoc[]

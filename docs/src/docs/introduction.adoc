@@ -1,0 +1,43 @@
+== Introduction
+
+The Grails Cookie plugin makes dealing with cookies easy in your Grails application. It provides an injectable `CookieService` and Groovy extension methods on `HttpServletRequest` and `HttpServletResponse` to get, set, and delete cookies with a single line of code.
+
+The plugin is fully https://tools.ietf.org/html/rfc6265[RFC 6265] compliant.
+
+=== Quick Start
+
+Add the plugin dependency to your `build.gradle`:
+
+[source,groovy,subs="attributes"]
+----
+dependencies {
+    implementation 'io.github.gpc:grails-cookie:{version}'
+}
+----
+
+NOTE: Replace `{version}` with the latest version available on Maven Central.
+
+==== Snapshot builds
+
+Snapshot versions are published to Maven Central Snapshots. To use a snapshot, add the repository:
+
+[source,groovy]
+----
+// settings.gradle
+dependencyResolutionManagement {
+    repositories {
+        maven { url = 'https://central.sonatype.com/repository/maven-snapshots/' }
+        mavenCentral()
+    }
+}
+----
+
+Then add the dependency:
+
+[source,groovy]
+----
+dependencies {
+    implementation 'io.github.gpc:grails-cookie:3.0.0-SNAPSHOT'
+}
+----
+

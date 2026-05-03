@@ -1,0 +1,78 @@
+== Configuration
+
+All configuration keys are optional. Defaults are intentionally safe for most applications. Configuration is typically specified in `grails-app/conf/application.yml`.
+
+=== `grails.plugins.cookie.cookieage.default`
+
+Default `Max-Age` for cookies in seconds.
+
+* `null` or unset → **30 days** (2,592,000 seconds)
+* `-1` → session cookie (removed when browser closes)
+* `0` is reserved for deletion — do not use as a default
+
+[source,yaml]
+----
+grails:
+  plugins:
+    cookie:
+      cookieage:
+        default: 86400   # 1 day
+----
+
+=== `grails.plugins.cookie.path.defaultStrategy`
+
+Determines how the cookie `Path` attribute is set when none is supplied explicitly.
+
+[cols="1,3"]
+|===
+| Value | Behavior
+
+| `context`
+| Web application context path (default)
+
+| `root`
+| `/` (Root path)
+
+| `current`
+| No path set (browser uses the current request path)
+|===
+
+[source,yaml]
+----
+grails:
+  plugins:
+    cookie:
+      path:
+        defaultStrategy: root
+----
+
+=== `grails.plugins.cookie.secure.default`
+
+Default `Secure` flag for cookies.
+
+If `null` or unset, it mirrors `request.isSecure()` (i.e., cookies are secure when the connection is HTTPS).
+
+Boolean values (true or false)
+
+[source,yaml]
+----
+grails:
+  plugins:
+    cookie:
+      secure:
+        default: true
+----
+
+=== `grails.plugins.cookie.httpOnly.default`
+
+Default `HttpOnly` flag for cookies. Defaults to `true`. Accepts boolean and string boolean values.
+
+[source,yaml]
+----
+grails:
+  plugins:
+    cookie:
+      httpOnly:
+        default: false
+----
+
