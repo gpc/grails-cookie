@@ -2,8 +2,8 @@
 project:
   name: "grails-cookie"
   title: "Grails Cookie Plugin"
-  description: "Makes dealing with cookies easy. Provides an injectable service and request/response\
-    \ extensions for one-line cookie get/set/delete. RFC 6265 compliant."
+  description: "Makes dealing with cookies easy. Provides an injectable service and\
+    \ request/response extensions for one-line cookie get/set/delete. RFC 6265 compliant."
   org: "Grails Plugin Collective"
 github:
   org: "gpc"
@@ -13,11 +13,11 @@ license:
 contributors:
   stokito: "Sergey Ponomarev"
   ctoestreich: "Christian Oestreich"
+  sbglasius: "Søren Berg Glasius"
   donbeave: "Alexey Zhokhov"
   jeffscottbrown: "Jeff Scott Brown"
   dalew75: "Dale Wiggins"
   matrei: "Mattias Reichel"
-  sbglasius: "Søren Berg Glasius"
 versions:
   current: "3.0.0-RC1"
   previous:
