@@ -22,9 +22,6 @@ versions:
   current: "3.0.0-RC1"
   previous:
   - "3.0.0-RC1"
-  - "2.0.5"
-  - "2.0.3"
-  - "2.0.2"
   ignore:
   - "3.0.x"
   - "4.0.x"
