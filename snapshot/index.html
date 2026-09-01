@@ -530,7 +530,7 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <div id="header">
 <h1>Grails Cookie User Guide</h1>
 <div class="details">
-<span id="revnumber">version 3.0.0-SNAPSHOT</span>
+<span id="revnumber">version 4.0.0-SNAPSHOT</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -538,6 +538,7 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <li><a href="#introduction">1. Introduction</a>
 <ul class="sectlevel2">
 <li><a href="#quick-start">1.1. Quick Start</a></li>
+<li><a href="#compatibility">1.2. Compatibility</a></li>
 </ul>
 </li>
 <li><a href="#usage">2. Usage</a>
@@ -575,7 +576,7 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    implementation 'io.github.gpc:grails-cookie:3.0.0-SNAPSHOT'
+    implementation 'io.github.gpc:grails-cookie:4.0.0-SNAPSHOT'
 }</code></pre>
 </div>
 </div>
@@ -586,7 +587,7 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Replace <code>3.0.0-SNAPSHOT</code> with the latest version available on Maven Central.
+Replace <code>4.0.0-SNAPSHOT</code> with the latest version available on Maven Central.
 </td>
 </tr>
 </table>
@@ -613,11 +614,56 @@ dependencyResolutionManagement {
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="groovy">dependencies {
-    implementation <span class="string"><span class="delimiter">'</span><span class="content">io.github.gpc:grails-cookie:3.0.0-SNAPSHOT</span><span class="delimiter">'</span></span>
+    implementation <span class="string"><span class="delimiter">'</span><span class="content">io.github.gpc:grails-cookie:4.0.0-SNAPSHOT</span><span class="delimiter">'</span></span>
 }</code></pre>
 </div>
 </div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="compatibility">1.2. Compatibility</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Plugin version</th>
+<th class="tableblock halign-left valign-top">Grails version</th>
+<th class="tableblock halign-left valign-top">Java</th>
+<th class="tableblock halign-left valign-top">Groovy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4.x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8.0.x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">21+</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5.x</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3.x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7.0.x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">17+</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4.x</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3.0.x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7+</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.x</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.0.x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7+</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.x</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
@@ -827,8 +873,8 @@ response.deleteCookie(existingCookieObject)</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 3.0.0-SNAPSHOT<br>
-Last updated 2026-05-01 08:06:15 UTC
+Version 4.0.0-SNAPSHOT<br>
+Last updated 2026-09-01 17:04:11 UTC
 </div>
 </div>
 </body>
