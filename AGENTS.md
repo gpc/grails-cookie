@@ -232,6 +232,24 @@ each for the reason and the condition for removing the lock:
 `gradle/wrapper/` is **not** lock-aware in the template's `files-sync.yml`, so a sync PR will try to
 downgrade the wrapper jar and `distributionUrl` — reject that part until the template targets Grails 8.
 
+### Template bug fixed here: `update-index` job permissions
+
+`ci.yml` and `release.yml` both call `update-versions.yml`, which declares
+`permissions: pull-requests: write` (its `commit-or-pr.sh` opens a PR when a direct push to a
+protected branch is rejected). A called workflow may not request more than the calling job grants, so
+the template's `permissions: contents: write` on those `update-index` jobs makes the **entire run**
+fail at startup with:
+
+```
+The workflow is requesting 'pull-requests: write', but is only allowed 'pull-requests: none'.
+```
+
+Both callers now also grant `pull-requests: write`. This never surfaces in the template repo because
+its `update-index` job is guarded off there. These two files are deliberately **not** locked, so
+future CI improvements still reach this repo — but a template sync that reverts the fix will make CI
+fail at startup on the sync PR itself. If that happens, re-apply the two `pull-requests: write`
+lines rather than merging the revert, and fix it upstream in the template.
+
 ## CI/CD
 
 - **CI** (`.github/workflows/ci.yml`): verifies repository structure, builds and tests on push/PR, then

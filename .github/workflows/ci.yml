@@ -147,5 +147,12 @@ jobs:
     needs: publish
     uses: ./.github/workflows/update-versions.yml
     permissions:
+      # update-versions.yml declares 'pull-requests: write' because
+      # commit-or-pr.sh falls back to opening a PR when the direct push to a
+      # protected branch is rejected. A called workflow may not request more
+      # than the calling job grants, so omitting it here fails the whole run at
+      # startup with "The workflow is requesting 'pull-requests: write', but is
+      # only allowed 'pull-requests: none'".
       contents: write
+      pull-requests: write
     secrets: inherit
