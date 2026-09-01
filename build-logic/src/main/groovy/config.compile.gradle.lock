@@ -1,0 +1,1 @@
+Locked: carries the Groovydoc conventions moved out of config.docs.gradle, because Gradle 9 forbids a root-project Groovydoc task from resolving the plugin project's groovyClasspath. Remove this lock once the template carries the same change.

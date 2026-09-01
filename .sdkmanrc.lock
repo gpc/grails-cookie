@@ -1,0 +1,1 @@
+Locked: pinned to the Grails 8 toolchain (Java 21 / Gradle 9.6.0 / Groovy 5.1.0). The template still targets Grails 7 (Java 17 / Gradle 8.14.4 / Groovy 4). Remove this lock once the template moves to Grails 8.

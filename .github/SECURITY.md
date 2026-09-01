@@ -34,5 +34,6 @@ Cookies are a fundamental part of web session management and carry inherent secu
 
 | Version      | Grails    | Supported |
 |--------------|-----------|-----------|
-| 3.x (latest) | Grails 7  | Yes       |
+| 4.x (latest) | Grails 8  | Yes       |
+| 3.x          | Grails 7  | Yes       |
 | 2.x          | Grails 3  | No        |

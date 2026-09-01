@@ -36,8 +36,7 @@ ruleset {
     SpaceAfterWhile
     SpaceAroundClosureArrow
     SpaceAroundMapEntryColon {
-        characterBeforeColonRegex = /./
-        characterAfterColonRegex = /\s/
+        characterAfterColonRegex = ' '
     }
     SpaceAroundOperator {
         ignoreParameterDefaultValueAssignments = false

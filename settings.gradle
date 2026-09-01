@@ -24,7 +24,7 @@ if (isReproducibleBuild) {
     gradle.settingsEvaluated {
         logger.warn(
                 '***** Remote Build Cache Disabled due to Reproducible Build *****\n' +
-                'Build date will be set to (SOURCE_DATE_EPOCH={})',
+                        'Build date will be set to (SOURCE_DATE_EPOCH={})',
                 System.getenv('SOURCE_DATE_EPOCH')
         )
     }
@@ -54,6 +54,5 @@ dependencyResolutionManagement {
             mavenLocal()
         }
         maven { url = 'https://repo.grails.org/grails/restricted' }
-        mavenCentral()
     }
 }

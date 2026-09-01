@@ -37,7 +37,34 @@ Then add the dependency:
 [source,groovy]
 ----
 dependencies {
-    implementation 'io.github.gpc:grails-cookie:3.0.0-SNAPSHOT'
+    implementation 'io.github.gpc:grails-cookie:4.0.0-SNAPSHOT'
 }
 ----
 
+
+=== Compatibility
+
+[cols="1,1,1,1"]
+|===
+| Plugin version | Grails version | Java | Groovy
+
+| 4.x
+| 8.0.x
+| 21+
+| 5.x
+
+| 3.x
+| 7.0.x
+| 17+
+| 4.x
+
+| 2.x
+| 3.0.x
+| 7+
+| 2.x
+
+| 1.x
+| 2.0.x
+| 7+
+| 2.x
+|===

@@ -1,0 +1,1 @@
+Locked: aggregateGroovyApiDoc is a Copy of the plugin project's own groovydoc output, because Gradle 9 forbids a root-project Groovydoc task from resolving another project's configurations. Remove this lock once the template carries the same change.

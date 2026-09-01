@@ -1,10 +1,14 @@
-# Contributing to Grails Cookie
+# Contributing
 
 Thank you for your interest in contributing! This guide will help you get started.
 
+> This file is synced from [grails-plugin-template](https://github.com/grails-plugins/grails-plugin-template) and
+> kept generic on purpose — it should read correctly in every repo built on the template. To lock it and stop
+> receiving updates, add a `CONTRIBUTING.md.lock` file next to it.
+
 ## Code of Conduct
 
-This project has a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold it. Please report
+This project has a Code of Conduct. By participating, you are expected to uphold it. Please report
 unacceptable behavior to the project maintainers.
 
 ## Getting Started
@@ -21,10 +25,10 @@ curl -s "https://get.sdkman.io" | bash
 
 ```bash
 # Clone the repository
-git clone https://github.com/gpc/grails-cookie.git
-cd grails-cookie
+git clone <this repository's URL>
+cd <the cloned directory>
 
-# Install the required SDK versions (Java 17, Gradle 8.14.4, Groovy 4.0.30)
+# Install the required SDK versions (Java, Gradle, Groovy — see .sdkmanrc)
 sdk env install
 
 # Build the project
@@ -34,13 +38,12 @@ sdk env install
 ### Project Structure
 
 ```
-grails-cookie/
+.
 ├── plugin/              # The publishable Grails plugin (source + unit tests ONLY)
 ├── examples/app1/       # Example app with integration tests
-├── code-coverage/       # JaCoCo coverage aggregation
 ├── build-logic/         # Gradle convention plugins (shared build configuration)
 ├── docs/                # Asciidoctor documentation
-└── .skills/             # AI agent best-practice docs
+└── .agents/skills/      # AI agent skills (.claude is a symlink to .agents)
 ```
 
 Key architectural rules:
@@ -58,7 +61,7 @@ Key architectural rules:
 ./gradlew build
 
 # Plugin unit tests only
-./gradlew :grails-cookie:test
+./gradlew test
 
 # Integration tests (runs the example app)
 ./gradlew :app1:integrationTest
@@ -111,12 +114,10 @@ categorize changes in release notes.
 
 ### Coding Standards
 
-- **Language:** Groovy 4.0 on Java 17
-- **Framework:** Grails 7.0
+- **Language:** Groovy on Java (see `.sdkmanrc` for exact versions)
+- **Framework:** Grails
 - **Testing:** Spock Framework on JUnit Platform
 - Follow existing code conventions in the project
-- Metric names must conform to [RFC 7230 token rules](https://tools.ietf.org/html/rfc7230#section-3.2.6)
-- Use `System.nanoTime()` for timing precision
 
 ### Gradle Conventions
 
@@ -132,7 +133,7 @@ categorize changes in release notes.
     - Integration tests go in `examples/app1/src/integration-test/`
 3. **Update documentation** if you changed behavior or added features (in `docs/src/docs/`)
 4. **Push your branch** and open a pull request against the release branch
-5. **Fill out the PR template** completely
+5. **Fill out the PR template** if the repository provides one
 
 ### What to Expect
 
@@ -143,20 +144,16 @@ categorize changes in release notes.
 
 ## Reporting Issues
 
-- Use
-  the [bug report template](https://github.com/gpc/grails-cookie/issues/new?template=bug_report.yml)
-  for bugs
-- Use
-  the [feature request template](https://github.com/gpc/grails-cookie/issues/new?template=feature_request.yml)
-  for enhancements
-- Check [existing issues](https://github.com/gpc/grails-cookie/issues) before creating a new one
+- Check this repository's existing issues before creating a new one
+- Use the bug report or feature request template if the repository provides one under its "New issue" flow
 
 ## Security Vulnerabilities
 
-If you discover a security vulnerability, **do not open a public issue**. Please see [SECURITY.md](.github/SECURITY.md)
-for responsible disclosure instructions.
+If you discover a security vulnerability, **do not open a public issue**. Instead, please report it privately to the
+project maintainers and include details to help reproduce and assess the issue. Responsible disclosure helps us protect
+users while we investigate and prepare a fix.
 
 ## License
 
 By contributing to this project, you agree that your contributions will be licensed under
-the [Apache License 2.0](LICENSE).
+the [Apache License 2.0](LICENSE.txt).

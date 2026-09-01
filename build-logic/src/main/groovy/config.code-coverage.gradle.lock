@@ -1,0 +1,1 @@
+Locked: declares the jacocoAgent/jacocoAnt dependencies explicitly, because the Grails 8 Gradle plugin applies the Grails BOM to those configurations and thereby suppresses the JaCoCo plugin's own defaultDependencies. Remove this lock once the template carries the same change.
