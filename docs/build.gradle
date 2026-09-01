@@ -2,10 +2,17 @@ import org.asciidoctor.gradle.jvm.AsciidoctorTask
 
 plugins {
     id 'org.asciidoctor.jvm.convert'
+    id 'config.project-metadata'
 }
 
 version = projectVersion
-group = 'io.github.gpc'
+group = projectGroup
+
+// The plugin subproject is this docs project's name minus the '-docs' suffix
+// (config.docs.gradle's own convention, e.g. 'grails-plugin-template-docs' ->
+// 'grails-plugin-template') — used below instead of hardcoding the plugin's
+// name, so this file works unmodified for any plugin built on the template.
+def pluginProjectName = project.name - '-docs'
 
 def asciidoctorAttributes = [
         'source-highlighter': 'coderay',
@@ -13,13 +20,13 @@ def asciidoctorAttributes = [
         toclevels           : '2',
         'toc-title'         : 'Table of Contents',
         icons               : 'font',
-        id                  : "${project.name - '-docs'}:${project.version}",
+        id                  : "${pluginProjectName}:${project.version}",
         idprefix            : '',
         idseparator         : '-',
         version             : project.version,
-        projectUrl          : 'https://github.com/gpc/grails-cookie',
-        sourcedir           : "${rootProject.allprojects.find { it.name == 'grails-cookie' }.projectDir}/src/main/groovy",
-        grailsDocBase       : "https://grails.apache.org/docs/${resolveGrailsDocsDirName(project.grailsVersion)}"
+        projectUrl          : "https://github.com/${githubOrg}/${githubProject}",
+        sourcedir           : "${rootProject.allprojects.find { it.name == pluginProjectName }.projectDir}/src/main/groovy",
+        grailsVersion       : grailsVersion
 ]
 
 tasks.named('asciidoctor', AsciidoctorTask) {
@@ -38,8 +45,4 @@ tasks.named('asciidoctor', AsciidoctorTask) {
                 '--add-opens', 'java.base/sun.nio.ch=ALL-UNNAMED'
         )
     }
-}
-
-static String resolveGrailsDocsDirName(String version) {
-    version.endsWith('-SNAPSHOT') ? 'snapshot' : version
 }

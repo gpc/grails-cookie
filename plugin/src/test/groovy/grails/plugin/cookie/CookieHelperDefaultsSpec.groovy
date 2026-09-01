@@ -18,9 +18,9 @@ class CookieHelperDefaultsSpec extends Specification implements GrailsWebUnitTes
 
     def cleanup() {
         grailsApplication.config.merge([
-                'grails.plugins.cookie.cookieage.default'   : null,
-                'grails.plugins.cookie.httpOnly.default'    : null,
-                'grails.plugins.cookie.secure.default'      : null,
+                'grails.plugins.cookie.cookieage.default': null,
+                'grails.plugins.cookie.httpOnly.default': null,
+                'grails.plugins.cookie.secure.default': null,
                 'grails.plugins.cookie.path.defaultStrategy': null,])
     }
 
