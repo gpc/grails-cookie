@@ -19,8 +19,9 @@ contributors:
   dalew75: "Dale Wiggins"
   matrei: "Mattias Reichel"
 versions:
-  current: "3.0.0-RC1"
+  current: "4.0.0-RC1"
   previous:
+  - "4.0.0-RC1"
   - "3.0.0-RC1"
   ignore:
   - "3.0.x"
