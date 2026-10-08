@@ -6,9 +6,9 @@ A Grails plugin (`io.github.gpc:grails-cookie`) that simplifies cookie handling 
 It provides RFC 6265-compliant cookie operations through two mechanisms: an injectable `CookieService`
 (Spring bean) and Groovy extension methods added to `HttpServletRequest` / `HttpServletResponse`.
 
-- **Language:** Groovy 5.1.0 on Java 21
+- **Language:** Groovy 5.1.3 on Java 21
 - **Framework:** Grails 8.0.0-M6
-- **Build System:** Gradle 9.6.0 (with wrapper)
+- **Build System:** Gradle 9.8.0 (with wrapper)
 - **Current Version:** 4.0.0-SNAPSHOT
 - **License:** Apache 2.0
 
@@ -111,8 +111,8 @@ groovy .github/scripts/verify-repository.groovy
 Use SDKMAN to install the correct tool versions (see `.sdkmanrc`):
 
 - Java: `21.0.12-librca`
-- Gradle: `9.6.0`
-- Groovy: `5.1.0`
+- Gradle: `9.8.0`
+- Groovy: `5.1.3`
 
 Run `sdk env install` to set up the environment.
 
