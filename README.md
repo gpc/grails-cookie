@@ -19,9 +19,11 @@ Add the following dependency to the `build.gradle` file:
 
 ```groovy
 dependencies {
-    implementation("io.github.gpc:grails-cookie:4.0.0-SNAPSHOT")
+    implementation("io.github.gpc:grails-cookie:4.0.0")
 }
 ```
+
+or what is the latest version for Grails 8.x 
 
 ### Grails 7.x
 
