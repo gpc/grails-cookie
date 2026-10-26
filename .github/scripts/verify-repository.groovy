@@ -3,6 +3,8 @@
 //
 // Run it locally with:
 //   groovy .github/scripts/verify-repository.groovy
+// or, without a local Groovy, through Docker like CI does:
+//   .github/scripts/groovy.sh .github/scripts/verify-repository.groovy
 //
 // It works both in the template repo itself and in any repo that received a
 // files-sync.yml sync from it — template-only checks are gated on the
@@ -11,7 +13,6 @@
 // Exit code is non-zero if any error was found. Warnings are printed but do
 // not fail the run unless VERIFY_STRICT=1 is set, in which case they are
 // escalated to errors too.
-@Grab('org.apache.groovy:groovy-yaml')
 import groovy.yaml.YamlSlurper
 
 def errors = []
@@ -53,11 +54,14 @@ def requiredFiles = [
     'gradle.properties',
     '.sdkmanrc',
     'gradle/wrapper/gradle-wrapper.properties',
-    'build-logic/settings.gradle',
     'docs/build.gradle',
     'docs/src/docs/index.tmpl',
     '.github/dependency-graph/external-references.yml',
 ]
+if (isTemplate) {
+    // child repos consume the published grails-plugin-conventions plugin instead of carrying the sources
+    requiredFiles << 'conventions/settings.gradle'
+}
 requiredFiles.each { path ->
     if (!new File(path).exists()) {
         err("Missing required file: ${path}")
@@ -155,8 +159,6 @@ if (projectYml != null) {
 def requiredGradleProperties = [
     'projectVersion', 'projectGroup', 'grailsVersion', 'projectsToPublish',
     'ciBuildScanPublish', 'ciBuildScanTermsOfUseUrl', 'ciBuildScanTermsOfUseAgree',
-    'checkstyleVersion', 'codenarcVersion', 'jacocoVersion',
-    'asciidoctorVersion', 'testLoggerVersion',
 ]
 if (gradlePropertiesFile.exists()) {
     requiredGradleProperties.each { key ->
@@ -188,7 +190,8 @@ if (sdkmanrcFile.exists()) {
         def m = distUrl =~ /gradle-([0-9.]+)-/
         if (m.find() && m.group(1) != sdkmanrc.getProperty('gradle')) {
             err(".sdkmanrc gradle version ('${sdkmanrc.getProperty('gradle')}') does not match the wrapper's " +
-                "distributionUrl version ('${m.group(1)}')")
+                "distributionUrl version ('${m.group(1)}') — update one to match the other, e.g. " +
+                "./gradlew wrapper --gradle-version ${sdkmanrc.getProperty('gradle')}")
         }
     }
 }
@@ -214,23 +217,41 @@ if (docsName && pluginNameStr && docsName != "${pluginNameStr}-docs") {
 }
 
 // ---------------------------------------------------------------------------
-// 9. Every config.* id used anywhere resolves to a build-logic file
+// 9. Every config.* id used anywhere resolves to a conventions file
 // ---------------------------------------------------------------------------
 
-def buildLogicDir = new File('build-logic/src/main/groovy')
-if (buildLogicDir.exists()) {
-    def availableIds = buildLogicDir.listFiles({ f -> f.name.endsWith('.gradle') } as FileFilter)
+// Child repos get the conventions as the published grails-plugin-conventions plugin (files-sync.yml points their
+// settings.gradle at it); the template itself includes them from conventions/.
+def usesPublishedConventions = settingsGradleText.contains('org.grails.plugins.gradle:grails-plugin-conventions')
+def usesIncludedConventions = (settingsGradleText =~ /includeBuild\(\s*['"]\.\/(build-logic|conventions)['"]/).find()
+if (!usesPublishedConventions && !usesIncludedConventions) {
+    err("settings.gradle neither maps the config.* plugins to org.grails.plugins.gradle:grails-plugin-conventions " +
+        "nor includes a conventions build")
+} else if (!isTemplate && !usesPublishedConventions) {
+    warn("settings.gradle still includes the conventions from source — the next files-sync switches it to the " +
+         "published grails-plugin-conventions plugin")
+}
+// The conventions only compile against the Grails Gradle plugins, so the build has to put them on its classpath (at its
+// own grailsVersion), or applying config.grails-plugin and friends fails with a NoClassDefFoundError
+if (!(settingsGradleText =~ /classpath\s+['"]org\.apache\.grails:grails-gradle-plugins/).find()) {
+    err("settings.gradle does not put org.apache.grails:grails-gradle-plugins on its buildscript classpath — the " +
+        "config.* plugins need the Grails Gradle plugins from the build (files-sync.yml adds the block)")
+}
+
+def conventionsDir = new File('conventions/src/main/groovy')
+if (conventionsDir.exists()) {
+    def availableIds = conventionsDir.listFiles({ f -> f.name.endsWith('.gradle') } as FileFilter)
         *.name.collect { it - '.gradle' } as Set
 
     def configIdPattern = ~/(?:id\s+['"]|apply\s*\(?\s*plugin:\s*['"]|pluginManager\.apply\(\s*['"])(config\.[a-zA-Z0-9.\-]+)['"]/
     new File('.').eachFileRecurse { f ->
         if (!f.isFile() || f.name != 'build.gradle') return
-        if (f.path.contains('/build/') || f.path.contains('/.gradle/') || f.path.startsWith('./build-logic')) return
+        if (f.path.contains('/build/') || f.path.contains('/.gradle/') || f.path.startsWith('./conventions')) return
         def text = f.text
         (text =~ configIdPattern).each { match ->
             def id = match[1]
             if (!availableIds.contains(id)) {
-                err("${f.path} applies '${id}', which has no build-logic/src/main/groovy/${id}.gradle")
+                err("${f.path} applies '${id}', which has no conventions/src/main/groovy/${id}.gradle")
             }
         }
     }
@@ -271,7 +292,7 @@ def rootBuildGradleText = readText('build.gradle') ?: ''
 ['subprojects\\s*\\{', 'allprojects\\s*\\{', 'configure\\s*\\('].each { pattern ->
     if (rootBuildGradleText =~ pattern) {
         err("Root build.gradle contains '${pattern.replace('\\\\', '')}' — shared configuration belongs in a " +
-            "build-logic/ convention plugin, not the root build script")
+            "conventions/ convention plugin, not the root build script")
     }
 }
 
@@ -341,7 +362,7 @@ allWorkflowFiles.each { f ->
 // ---------------------------------------------------------------------------
 
 if (!isTemplate) {
-    def excludedDirs = ['./build-logic', './.agents', './gradle', './.git']
+    def excludedDirs = ['./conventions', './build-logic', './.agents', './gradle', './.git']
     def headerPattern = ~/(WARNING: Do not edit this file directly|maintained in the grails-plugin-template repository|grails-plugin-template\/tree\/main)/
     def identifierPattern = ~/(grails-plugin-template|PluginTemplateGrailsPlugin|grails\/plugins\/template|app1)/
     new File('.').eachFileRecurse { f ->
@@ -408,6 +429,23 @@ if (isTemplate) {
         }
     }
 
+    def contributorsJob = loadYaml('.github/workflows/update-contributors.yml')?.jobs?.get('update-contributors')
+    if (contributorsJob != null && !((contributorsJob.'if' as String)?.contains(repoGuard))) {
+        err("update-contributors.yml job 'update-contributors' does not guard against running in the template " +
+            "repo itself (expected its 'if:' to contain \"${repoGuard}\")")
+    }
+
+    // ci.yml is synced, but synced repos have no conventions/ directory to test
+    def templateOnlyGuard = "github.repository == 'grails-plugins/grails-plugin-template'"
+    (ciYaml?.jobs?.build?.steps ?: []).each { step ->
+        def run = step.run as String
+        def ifCondition = step.'if' as String
+        if (run != null && run.contains('-p conventions') && (ifCondition == null || !ifCondition.contains(templateOnlyGuard))) {
+            err("ci.yml step '${step.name}' runs against conventions/, which synced repos do not have — " +
+                "its 'if:' must contain \"${templateOnlyGuard}\"")
+        }
+    }
+
     if (!filesSyncText.contains("exclude='files-sync.yml'") && !filesSyncText.contains('exclude=\'files-sync.yml\'')) {
         err("files-sync.yml no longer excludes itself from the workflows it copies — it would sync itself into " +
             "every child repo")
@@ -419,7 +457,7 @@ if (isTemplate) {
     // Paths that files-sync.yml's rsync/maybe_copy calls draw from source/ must
     // actually exist in the template, or every sync PR silently omits them.
     def syncedSourcePaths = [
-        '.github/workflows', '.github/scripts', 'build-logic', 'gradle',
+        '.github/workflows', '.github/scripts', 'gradle',
         '.agents', 'docs/src/docs/index.tmpl',
         '.editorconfig', '.sdkmanrc', 'CONTRIBUTING.md', 'LICENSE.txt', 'gradlew.bat', 'gradlew',
         '.github/dependabot.yml', '.github/renovate.json', '.github/release-drafter.yml',
